@@ -1,0 +1,221 @@
+<div class="container-fluid">
+    <div class="row justify-content-end">
+        <div class="col">
+            <button type="button" (click)="manageStock()" class="btn btn-outline-success btn-sm float-left">Materiales y supervisión</button>
+        </div>
+        <div class="col-auto">
+            <button type="button" (click)="cerrarSesion()" class="btn btn-outline-warning btn-sm">Cerrar sesión</button>
+        </div>
+        <div class="col">
+            <button type="button" (click)="manageTeams()" class="btn btn-outline-success btn-sm float-right">Control de equipos</button>
+        </div>
+    </div>
+  </div>
+<div class="container">
+    <form>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="dotsFile">Buscar archivo</label>
+                    <input type="file" class="form-control-file" (change)="fileChangeListener($event)"
+                        id="dotsFile" accept=".xlsx">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <button type="button" (click)="dataToDB()" class="btn btn-primary float-right">Cargar a BD</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="row pt-3">
+        <div class="col-12">
+            <ngb-progressbar *ngIf="progress > 0" [value]="progress" type="gray"></ngb-progressbar>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row pt-2">
+        <div class="col-9">
+            <div class="row">
+                <div class="col-4">
+                    <label for="departmentSelect">Seleccione un departamento:</label>
+                    <select id="departmentSelect" class="custom-select" style="width: 100%;" name="parents" 
+                    [(ngModel)]="selectedParent" (change)="getSectorsByParent()">
+                        <option [value]="parent.code" *ngFor="let parent of parents">{{parent.name}}</option>
+                    </select>
+                </div>
+                <div class="col-4">
+                    <label for="sectorSelect">Seleccione un municipio:</label>
+                    <select class="custom-select" style="width: 100%;" name="sectors" id="sectorSelect"
+                    [(ngModel)]="selectedSector" (change)="getFileredDots()">
+                        <option [value]="sector.code" *ngFor="let sector of sectors">{{sector.name}}</option>
+                    </select>
+                </div>
+                <div class="row align-items-end">
+                    <div class="col">
+                        <button type="button" (click)="asignarPuntos()" class="btn btn-primary float-right">{{ buttonString }}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row pt-5">
+                <div class="col-12">
+                    <agm-map  [latitude]="latitude" [longitude]="longitude">
+                        <agm-marker *ngFor="let dot of dotList" [latitude]="dot.latitude" [longitude]="dot.longitude"
+                            [visible]="dot.visible" (markerClick)="checkLocation($event)" 
+                            (mouseOver)="onMouseOver(infoWindow, $event, $event)" 
+                            (mouseOut)="onMouseOut(infoWindow, $event)">
+                                <agm-info-window [disableAutoPan]="false" #infoWindow>
+                                    <div>
+                                        Tienda: {{ tmpHoverInfo.name }}
+                                    </div>
+                                </agm-info-window>
+                        </agm-marker>
+                        <agm-direction (onResponse)="requestResponse($event)" [origin]="initDot" [destination]="lastDot" 
+                        [waypoints]="waypointsCalculate" [visible]="waypointsSelect" [optimizeWaypoints]="true"></agm-direction>
+                    </agm-map>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="selectDots" class="col-3 p-t4">
+            <div class="row">
+                <h6>Seleccionados</h6>
+            </div>
+            <div class="row">
+                <ul class="list-group">
+                    <li *ngFor="let dot of assignStoreColl" class="list-group-item">{{  dot.name }}
+                        <button type="button" class="close" aria-label="Close" (click)="returnToDotCollection(dot.id)">X</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="row pt-1 justify-content-start">
+                <div class="col -12">
+                    <button type="button" class="btn btn-primary float-right" (click)="checkDistance()">Calcular Ruta</button>
+                </div>
+            </div>
+            <div *ngIf="distanceKM > 0" class="row">
+                <h6>Recorrido de ruta: {{ distanceKM }} Km</h6>
+            </div>
+        </div>
+        <div *ngIf="selectedDot.visible && !selectDots" class="col-2 pt-4">
+            <div class="row">
+                <h6>Cliente</h6>
+            </div>
+            <div class="row">
+                Nombre: {{ selectedDot.client }}
+            </div>
+            <div class="row">
+                Teléfono 1: {{ selectedDot.phone }}
+            </div>
+            <div class="row">
+                Teléfono 2: {{ selectedDot.phone2 }}
+            </div>
+            <div class="row">
+                <h6>Direcciones</h6>
+            </div>
+            <div class="row">
+                Local: {{ selectedDot.name }}
+            </div>
+            <div class="row">
+                Dirección 1: {{ selectedDot.dir1 }}
+            </div>
+            <div class="row">
+                Dirección 2: {{ selectedDot.dir2 }}
+            </div>
+            <div class="row">
+                Dirección 3: {{ selectedDot.dir3 }}
+            </div>
+            <div class="row">
+                Referencia: {{ selectedDot.reference }}
+            </div>
+            <div class="row">
+                <h6>Información de Contacto ILC:</h6>
+            </div>
+            <div class="row">
+                Contacto: {{ selectedDot.contactILC }}
+            </div>
+            <div class="row">
+                Número: {{ selectedDot.phoneILC }}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row pt-2">
+        <div class="col-12">
+            <!--<div class="row">
+                <div class="col-12">
+                    <h6>Equipos por fecha:</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label for="Fecha: "></label>
+                            <input class="form-control" [(ngModel)]="date" (ngModelChange)="filterTeamByDate()" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #d="ngbDatepicker">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button">+</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>-->
+            <div class="row pt-2">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Código</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let head of headListT">
+                            <th scope="row">{{ head.ident }}</th>
+                            <td>{{ head.code }}</td>
+                            <td>{{ head.name }}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary" (click)="registrarSchedule(head.teamId)" [disabled]="head.scheduled">Asignar</button>
+                                <button type="button" class="btn btn-warning" (click)="registerCompleted(head.teamId)" [disabled]="!head.scheduled">Ruta completada</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-between p-2">
+                    <ngb-pagination [collectionSize]="headList.length" [(page)]="pageH" [pageSize]="pageSizeH" (pageChange)="refreshTeams()">
+                    </ngb-pagination>
+                
+                    <select class="custom-select" style="width: auto" [(ngModel)]="pageSizeH" (ngModelChange)="refreshTeams()">
+                        <option [ngValue]="5">5 por página</option>
+                        <option [ngValue]="10">10 por página</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<div class="row">
+        <div class="col-8">
+            <agm-map [latitude]="latitude" [longitude]="longitude">
+                <agm-direction [origin]="origin" [destination]="destination" [waypoints]="waypoints"></agm-direction>
+            </agm-map>
+        </div>
+    </div>-->
+</div>
+
+<ng-template #successLoad let-modal>
+    <div class="modal-header">
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>{{ auxTotal }} Registros cargados exitosamente</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Cerrar</button>
+    </div>
+</ng-template>

@@ -1,0 +1,588 @@
+<div class="container-fluid">
+  <div class="row justify-content-end">
+      <div class="col">
+          <button type="button" (click)="manageMap()" class="btn btn-outline-success btn-sm float-left">Asignación de ruta</button>
+      </div>
+      <div class="col-auto">
+        <button type="button" (click)="cerrarSesion()" class="btn btn-outline-warning btn-sm">Cerrar sesión</button>
+      </div>
+      <div class="col">
+          <button type="button" (click)="manageTeam()" class="btn btn-outline-success btn-sm float-right">Control de equipos</button>
+      </div>
+  </div>
+</div>
+
+<ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
+  <li [ngbNavItem]="1">
+    <a ngbNavLink>Histórico de suministros</a>
+    <ng-template ngbNavContent>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="head">Equipo</label>
+              <div class="ng-autocomplete">
+                  <ng-autocomplete 
+                  [data]="headList"
+                  [searchKeyword]="keywordEmp"
+                  (selected)="headSelected($event)"
+                  [itemTemplate]="itemTemplateH"
+                  [notFoundTemplate]="notFoundTemplateH">                                 
+                  </ng-autocomplete>
+                  
+                  <ng-template #itemTemplateH let-item>
+                      <a [innerHTML]="item.name"></a>
+                  </ng-template>
+                      
+                  <ng-template #notFoundTemplateH let-notFound>
+                      <div [innerHTML]="notFound"></div>
+                  </ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <div *ngIf="canSave" class="row justify-content-end">
+              <div class="col">
+                <span>Última asignación: {{ teamSelected.lastAssignation | date:'medium':'-0600' }}</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <h6>Acumulados</h6>
+              </div>
+            </div>
+              <div class="row">
+                <div class="col">
+                  <div class="d-flex justify-content-between p-2">
+                      <ngb-pagination [collectionSize]="totalList.length" [(page)]="page" [pageSize]="pageSize" (pageChange)="refreshTotals()">
+                      </ngb-pagination>
+                    
+                      <select class="custom-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="refreshTotals()">
+                          <option [ngValue]="25">25 por página</option>
+                          <option [ngValue]="40">40 por página</option>
+                      </select>
+                  </div>
+                  <table class="table table-striped">
+                      <thead>
+                          <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Nombre</th>
+                              <th scope="col">Entregado</th>
+                              <th scope="col">Esperado disp</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr *ngFor="let total of totalListT">
+                              <th scope="row">{{ total.ident }}</th>
+                              <td>{{ total.key }}</td>
+                              <td>{{ total.value }}</td>
+                              <td>{{ total.esp }}</td>
+                          </tr>
+                      </tbody>
+                  </table>
+                </div>
+              </div>
+          </div>
+          <div *ngIf="canSave" class="col-6">
+            <div class="row no-gutters">
+              <div class="col">
+                  <h6>Asignar suministros</h6>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <ul class="list-group">
+                  <li class="list-group-item">Responsable: {{ head.code }} {{head.name}} </li>
+                  <li *ngFor="let emp of teamSelected.structure" class="list-group-item">
+                    {{ emp.code }} {{ emp.name}}
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="row pt-2">
+              <ul ngbNav #subnav="ngbNav" [(activeId)]="subActive" class="nav-tabs">
+                <li [ngbNavItem]="1">
+                  <a ngbNavLink>Suministros</a>
+                  <ng-template ngbNavContent>
+                    <div class="col">
+                      <form [formGroup]="productForm" (ngSubmit)="insertStockTacking()">
+                        <div class="row">
+                          <div class="col">
+                            <button type="submit" class="btn btn-primary float-right">Asignar</button>
+                          </div>
+                        </div>
+                        <hr>
+                        <div class="row pt-2">
+                          <div class="col">
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" formControlName="picture1" type="checkbox" id="picture1" >
+                              <label class="form-check-label" for="picture1">Banner</label>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" formControlName="picture2" type="checkbox" id="picture2" >
+                              <label class="form-check-label" for="picture2">Porta Afiche</label>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" formControlName="picture3" type="checkbox" id="picture3" >
+                              <label class="form-check-label" for="picture3">Afiche</label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" formControlName="picture4" type="checkbox" id="picture4" >
+                              <label class="form-check-label" for="picture4">Marco Lego</label>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" formControlName="picture5" type="checkbox" id="picture5" >
+                              <label class="form-check-label" for="picture5">Glorificador</label>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" formControlName="picture6" type="checkbox" id="picture6" >
+                              <label class="form-check-label" for="picture6">Banderola</label>
+                            </div>
+                          </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                          <div class="col">
+                            <h6>Pinturas</h6>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Blanca Latex</label>
+                            <input type="number" min="0" class="form-control" formControlName="blancaLtx" id="blancaLtx" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Blanca brillante</label>
+                            <input type="number" min="0" class="form-control" formControlName="blancaBrill" id="blancaBrill" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Blanca Optimus</label>
+                            <input type="number" min="0" class="form-control" formControlName="blancaOpt" id="blancaOpt" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Amarilla Brillante</label>
+                            <input type="number" min="0" class="form-control" formControlName="amrBrill" id="amrBrill" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Azul brillante</label>
+                            <input type="number" min="0" class="form-control" formControlName="azulBrill" id="azulBrill" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Blanca anticorro</label>
+                            <input type="number" min="0" class="form-control" formControlName="blancaAntic" id="blancaAntic" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Blanco top cover</label>
+                            <input type="number" min="0" class="form-control" formControlName="blancaTopCover" id="blancaTopCover" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Pin prov 1</label>
+                            <input type="number" min="0" class="form-control" formControlName="prinPrv1" id="prinPrv1" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Pin prov 2</label>
+                            <input type="number" min="0" class="form-control" formControlName="prinPrv2" id="prinPrv2" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Pin prov 3</label>
+                            <input type="number" min="0" class="form-control" formControlName="prinPrv3" id="prinPrv3" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Pin prov 4</label>
+                            <input type="number" min="0" class="form-control" formControlName="prinPrv4" id="prinPrv4" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Pin prov 5</label>
+                            <input type="number" min="0" class="form-control" formControlName="prinPrv5" id="prinPrv5" placeholder="">
+                          </div>
+                        </div>
+                        <hr>
+                        <div class="row pt-4">
+                          <div class="col">
+                            <h6>Materiales</h6>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Alambre Galv.</label>
+                            <input type="number" min="0" class="form-control" formControlName="alambGalv" id="alambGalv" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Bandeja para rodillo</label>
+                            <input type="number" min="0" class="form-control" formControlName="bandejaRod" id="banderaRod" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Bidones</label>
+                            <input type="number" min="0" class="form-control" formControlName="bidones" id="bidones" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Broca concreto 3/16"</label>
+                            <input type="number" min="0" class="form-control" formControlName="brocaConc316" id="brocaConc316" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Broca concreto 3/8"</label>
+                            <input type="number" min="0" class="form-control" formControlName="brocaCon38" id="brocaCon38" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Broca concreto 5/16"</label>
+                            <input type="number" min="0" class="form-control" formControlName="brocaCon516" id="brocaCon516" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Brocha 1/2"</label>
+                            <input type="number" min="0" class="form-control" formControlName="brocha05" id="brocha05" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Brocha 1"</label>
+                            <input type="number" min="0" class="form-control" formControlName="brocha1" id="brocha1" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Brocha 1 1/2"</label>
+                            <input type="number" min="0" class="form-control" formControlName="brocha112" id="brocha112" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Brocha 2"</label>
+                            <input type="number" min="0" class="form-control" formControlName="brocha2" id="brocha2" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Brocha 4"</label>
+                            <input type="number" min="0" class="form-control" formControlName="brocha4" id="brocha4" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Brocha 6"</label>
+                            <input type="number" min="0" class="form-control" formControlName="brocha6" id="brocha6" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Caja de herramientras roja</label>
+                            <input type="number" min="0" class="form-control" formControlName="cajaHerrRoja" id="cajaHerrRoja" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Cepillo de alambre</label>
+                            <input type="number" min="0" class="form-control" formControlName="cepAlambre" id="cepAlambre" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Cincha plastica 14"</label>
+                            <input type="number" min="0" class="form-control" formControlName="cinchaPlast14" id="cinchaPlast14" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Cinta métrica</label>
+                            <input type="number" min="0" class="form-control" formControlName="cintaMetrica" id="cintaMetrica" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Destornillador philips</label>
+                            <input type="number" min="0" class="form-control" formControlName="destPhilips" id="destPhilips" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Destornillador plano</label>
+                            <input type="number" min="0" class="form-control" formControlName="destPhilipsPlano" id="destPhilipsPlano" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Escalera extensible</label>
+                            <input type="number" min="0" class="form-control" formControlName="escaleraExt" id="escaleraExt" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Escalera tijera</label>
+                            <input type="number" min="0" class="form-control" formControlName="escaleraTjr" id="escaleraTjr" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Escobas</label>
+                            <input type="number" min="0" class="form-control" formControlName="escobas" id="escobas" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Espatulas</label>
+                            <input type="number" min="0" class="form-control" formControlName="espatulas" id="espatulas" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Extensión eléctrica</label>
+                            <input type="number" min="0" class="form-control" formControlName="extElectrica" id="extElectrica" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Extensiones rodillo</label>
+                            <input type="number" min="0" class="form-control" formControlName="extRodillo" id="extRodillo" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Felpas de 9" Pared Lisa</label>
+                            <input type="number" min="0" class="form-control" formControlName="felpas9Plisa" id="felpas9Plisa" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Felpas de 9" Ormigon</label>
+                            <input type="number" min="0" class="form-control" formControlName="felpas9Or" id="felpas9Or" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Hilo Nylon</label>
+                            <input type="number" min="0" class="form-control" formControlName="nylon" id="nylon" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Manerales para rodillo 9"</label>
+                            <input type="number" min="0" class="form-control" formControlName="manRodillo9" id="manRodillo9" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Martillos</label>
+                            <input type="number" min="0" class="form-control" formControlName="martillo" id="martillo" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Nivel de Caja</label>
+                            <input type="number" min="0" class="form-control" formControlName="nivelCaja" id="nivelCaja" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Pinzas</label>
+                            <input type="number" min="0" class="form-control" formControlName="pinzas" id="pinzas" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Puntas Philips p/ Taladro</label>
+                            <input type="number" min="0" class="form-control" formControlName="pPhilipsTal" id="pPhilipsTal" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Punta Plana P/ Taladro</label>
+                            <input type="number" min="0" class="form-control" formControlName="pPlanaTal" id="pPlanaTal" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Taladros</label>
+                            <input type="number" min="0" class="form-control" formControlName="taladro" id="taladro" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Cinta doble cara</label>
+                            <input type="number" min="0" class="form-control" formControlName="cintDobCara" id="cintDobCara" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Clavo de acero 1"</label>
+                            <input type="number" min="0" class="form-control" formControlName="clavoAcr1" id="clavoAcr1" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Tornillo punta broca 1" Hexagonal</label>
+                            <input type="number" min="0" class="form-control" formControlName="torBr1Hex" id="torBr1Hex" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Anclas plasticas 3/8" azul</label>
+                            <input type="number" min="0" class="form-control" formControlName="aclaP38" id="aclaP38" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Wype</label>
+                            <input type="number" min="0" class="form-control" formControlName="wype" id="wype" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Cubo N°8 para taladro</label>
+                            <input type="number" min="0" class="form-control" formControlName="cubo8Tal" id="cubo8Tal" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Solvente mineral</label>
+                            <input type="number" min="0" class="form-control" formControlName="solventeMin" id="solventeMin" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">ItemPrv1</label>
+                            <input type="number" min="0" class="form-control" formControlName="itemPrv1" id="itemPrv1" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">ItemPrv2</label>
+                            <input type="number" min="0" class="form-control" formControlName="itemPrv2" id="itemPrv2" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">ItemPrv3</label>
+                            <input type="number" min="0" class="form-control" formControlName="itemPrv3" id="itemPrv3" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">ItemPrv4</label>
+                            <input type="number" min="0" class="form-control" formControlName="itemPrv4" id="itemPrv4" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">ItemPrv5</label>
+                            <input type="number" min="0" class="form-control" formControlName="itemPrv5" id="itemPrv5" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">ItemPrv6</label>
+                            <input type="number" min="0" class="form-control" formControlName="itemPrv6" id="itemPrv6" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">ItemPrv7</label>
+                            <input type="number" min="0" class="form-control" formControlName="itemPrv7" id="itemPrv7" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">ItemPrv8</label>
+                            <input type="number" min="0" class="form-control" formControlName="itemPrv8" id="itemPrv8" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">ItemPrv9</label>
+                            <input type="number" min="0" class="form-control" formControlName="itemPrv9" id="itemPrv9" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">ItemPrv10</label>
+                            <input type="number" min="0" class="form-control" formControlName="itemPrv10" id="itemPrv10" placeholder="">
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </ng-template>
+                </li>
+                <li [ngbNavItem]="2">
+                  <a ngbNavLink>Razones</a>
+                  <ng-template ngbNavContent>
+                    <div class="col">
+                      <form [formGroup]="ratioForm" (ngSubmit)="insertRatio()">
+                        <div class="row">
+                          <div class="col">
+                            <button type="submit" class="btn btn-primary float-right">Guardar</button>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Blanca Latex</label>
+                            <input type="number" min="0" class="form-control" formControlName="blancaLtx" id="blancaLtx" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Blanca Optimus</label>
+                            <input type="number" min="0" class="form-control" formControlName="blancaOpt" id="blancaOpt" placeholder="">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <label for="">Amarilla Brillante</label>
+                            <input type="number" min="0" class="form-control" formControlName="amrBrill" id="amrBrill" placeholder="">
+                          </div>
+                          <div class="col">
+                            <label for="">Azul brillante</label>
+                            <input type="number" min="0" class="form-control" formControlName="azulBrill" id="azulBrill" placeholder="">
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </ng-template>
+                </li>
+              </ul>
+              <div [ngbNavOutlet]="subnav" class="mt-2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </li>
+  <li [ngbNavItem]="2">
+    <a ngbNavLink>Tareas pendientes</a>
+    <ng-template ngbNavContent>
+      <div class="container">
+        <div class="row">
+          <form class="form-inline">
+            <div class="form-group">
+              <div class="input-group">
+                <input class="form-control" placeholder="yyyy-mm-dd"
+                       name="dp" [(ngModel)]="dateFilter" (ngModelChange)="filterByDate()" ngbDatepicker #d="ngbDatepicker">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button">+</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="d-flex justify-content-between p-2">
+                <ngb-pagination [collectionSize]="jobList.length" [(page)]="pageJ" [pageSize]="pageSizeJ" (pageChange)="refreshJobs()">
+                </ngb-pagination>
+              
+                <select class="custom-select" style="width: auto" [(ngModel)]="pageSizeJ" (ngModelChange)="refreshJobs()">
+                    <option [ngValue]="10">10 por página</option>
+                    <option [ngValue]="25">25 por página</option>
+                </select>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Fecha de registro</th>
+                        <th scope="col">Tienda</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Por revisar</th>
+                        <th scope="col">Ver</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let job of jobListT">
+                        <th scope="row">{{ job.ident }}</th>
+                        <td>{{ job.createdAt | date:'medium':'-0600' }}</td>
+                        <td>{{ job.Store.code }}</td>
+                        <td>{{ job.Store.name }}</td>
+                        <th><span *ngIf="job.active || job.completed">Si</span><span *ngIf="!job.active && !job.completed">No</span> </th>
+                        <th><input type="button" (click)="goToDetail(job.id)" class="btn btn-primary" [disabled]="!job.active && !job.completed" value="ir"></th>
+                    </tr>
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </li>
+</ul>
+
+<div [ngbNavOutlet]="nav" class="mt-2"></div>

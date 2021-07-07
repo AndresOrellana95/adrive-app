@@ -1,0 +1,277 @@
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <input type="button" (click)="returnToMain()" class="btn btn-success float-right" value="Regresar">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <h6>DETALLE DE TAREA</h6>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <h6>Cliente</h6>
+            </div>
+            <div class="row">
+                Nombre: {{ selectedDot.client }}
+            </div>
+            <div class="row">
+                Teléfono 1: {{ selectedDot.phone }}
+            </div>
+            <div class="row">
+                Teléfono 2: {{ selectedDot.phone2 }}
+            </div>
+            <div class="row">
+                Contacto ILC: {{ selectedDot.contactILC }}
+            </div>
+            <div class="row">
+                Teléfono ILC: {{ selectedDot.phoneILC }}
+            </div>
+            <div class="row">
+                <h6>Direcciones</h6>
+            </div>
+            <div class="row">
+                Código: {{ selectedDot.code }}
+            </div>
+            <div class="row">
+                Local: {{ selectedDot.name }}
+            </div>
+            <div class="row">
+                Dirección 1: {{ selectedDot.dir1 }}
+            </div>
+            <div class="row">
+                Dirección 2: {{ selectedDot.dir2 }}
+            </div>
+            <div class="row">
+                Dirección 3: {{ selectedDot.dir3 }}
+            </div>
+            <div class="row">
+                Referencia: {{ selectedDot.reference }}
+            </div>
+        </div>
+    </div>
+    <div class="row pt-2">
+        <div class="col-12">
+            <div class="row">
+                <div class="col">
+                    <h6>Carga Imagenes</h6>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2"><strong>Antes:</strong></div>
+                            <div *ngFor="let imagen of imagesBefore; index as i" class="col-2">
+                              <button class="btn btn-info btn-block" (click)="selectImage(i, 1)">IMG{{i + 1}}</button>
+                              <button class="btn btn-warning btn-block" (click)="deleteBefore(i)">X</button>
+                            </div>
+                            <div class="col-1">
+                              <label for="before">
+                                <a class="btn btn-success">
+                                  <span class="fa fa-plus">Subir</span>
+                                </a>
+                              </label>
+                              <input id="before" name="input[]" [imageToDataUrl]="options"
+                                (imageSelected)="selectedBefore($event)" type="file" class="file invisible" data-show-upload="false"
+                                data-show-caption="true" accept="image/*" [disabled]="imagesBefore.length > 2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2"><strong>Después:</strong></div>
+                            <div *ngFor="let imagen of imagesAfter; index as i" class="col-2">
+                              <button class="btn btn-info btn-block" (click)="selectImage(i, 2)" >IMG{{i + 1}}</button>
+                              <button class="btn btn-warning btn-block" (click)="deleteAfter(i)">X</button>
+                            </div>
+                            <div class="col-1">
+                              <label for="after">
+                                <a class="btn btn-success">
+                                  <span class="fa fa-plus">Subir</span>
+                                </a>
+                              </label>
+                              <input id="after" name="input[]" [imageToDataUrl]="options"
+                                (imageSelected)="selectedAfter($event)" type="file" class="file invisible" data-show-upload="false"
+                                data-show-caption="true" accept="image/*" [disabled]="imagesAfter.length > 2">
+                            </div>
+                        </div>                  
+                    </div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2"><strong>Conforme:</strong></div>
+                            <div *ngFor="let imagen of imageAccetp; index as i" class="col-2">
+                              <button class="btn btn-info btn-block" (click)="selectImage(i, 3)">IMG{{i + 1}}</button>
+                              <button class="btn btn-warning btn-block" (click)="deleteAccept(i)">X</button>
+                            </div>
+                            <div class="col-1">
+                              <label for="acceptAttemp">
+                                <a class="btn btn-success">
+                                  <span class="fa fa-plus">Subir</span>
+                                </a>
+                              </label>
+                              <input id="acceptAttemp" name="input[]" [imageToDataUrl]="options"
+                                (imageSelected)="selectedAccept($event)" type="file" class="file invisible" data-show-upload="false"
+                                data-show-caption="true" accept="image/*" [disabled]="imageAccetp.length > 0">
+                            </div>
+                        </div>
+                    </div>
+                </div>              
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <h6>Seleccione una imagen para visualizar</h6>
+            </div>
+            <div class="row">
+                <img [src]="selectedImg" *ngIf="selectedImg"><br>
+            </div>
+        </div>
+    </div>
+    <div class="row pt-2">
+        <div class="col-12">
+            <h6>Tarea</h6>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" [(ngModel)]="nameflag" type="checkbox" id="paintedName" >
+              <label class="form-check-label" for="picture1">Nombre pintado</label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h6>Rotulos</h6>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" [(ngModel)]="rotule1" type="checkbox" id="picture1" >
+            <label class="form-check-label" for="picture1">Banner</label>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" [(ngModel)]="rotule2" type="checkbox" id="picture2" >
+            <label class="form-check-label" for="picture2">Porta afiche</label>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" [(ngModel)]="rotule3" type="checkbox" id="picture3" >
+            <label class="form-check-label" for="picture3">Afiche</label>
+          </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" [(ngModel)]="rotule4" type="checkbox" id="picture4" >
+            <label class="form-check-label" for="picture4">Marco Lego</label>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" [(ngModel)]="rotule5" type="checkbox" id="picture5" >
+            <label class="form-check-label" for="picture5">Glorificador</label>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" [(ngModel)]="rotule6" type="checkbox" id="picture6" >
+            <label class="form-check-label" for="picture6">Banderola</label>
+          </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h6>Áreas</h6>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <label for="addRow">Áreas pintada</label>
+            </div>
+            <div class="row">
+                <input id="addRowPlus" type="button" class="btn btn-success float-left" value="+" (click)="addRowP()">
+            </div>
+        </div>
+    </div>
+    <div *ngFor="let p of pArray; index as i" class="row">
+        <div class="col">
+            <label for="baseP{{i}}">Base</label>
+            <input type="number" id="baseP{{i}}" [(ngModel)]="p.base" 
+            class="form-control" placeholder="">
+        </div>
+        <div class="col">
+            <label for="alturaP{{i}}">Altura</label>
+            <input type="number" id="alturaP{{i}}" [(ngModel)]="p.altura" 
+            class="form-control" placeholder="">
+        </div>
+    </div>
+    <div class="row pt-2">
+        <div class="col">
+            <div class="row">
+                <label for="addRow">Áreas no pintada</label>
+            </div>
+            <div class="row">
+                <input id="addRow" type="button" class="btn btn-success float-left" value="+" (click)="addRow()">
+            </div>
+        </div>
+    </div>
+    <div *ngFor="let np of npArray; index as i" class="row">
+        <div class="col">
+            <label for="baseNP{{i}}">Base</label>
+            <input type="number" id="baseNP{{i}}" [(ngModel)]="np.baseNP" 
+            class="form-control" placeholder="">
+        </div>
+        <div class="col">
+            <label for="alturaNP{{i}}">Altura</label>
+            <input type="number" id="alturaNP{{i}}" [(ngModel)]="np.alturaNP" 
+            class="form-control" placeholder="">
+        </div>
+    </div>
+    <div class="row pt-2">
+        <div class="col">
+            <input type="button" class="btn btn-info float-right" (click)="calculateAreaRegionsWP()" value="Calcular">
+        </div>
+    </div>
+    <div class="row pt-3">
+        <div class="col">
+            <h6>Área total pintada: {{ totalPaintedArea }} mts2</h6>
+        </div>
+        <div class="col">
+            <h6>Área total no pintada: {{ totalWPaintArea }} mts2</h6>
+        </div>
+    </div>
+    <div *ngIf="overflowValue > 0" class="row">
+        <span style="color: red;">{{ overflowValue }}</span>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <label for="comments">Comentarios</label>
+                <textarea class="form-control" [(ngModel)]="comments" id="comments" rows="3"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <button type="button" (click)="saveJobState()" class="btn btn-success float-right">Guardar tarea</button>
+        </div>
+    </div>
+</div>

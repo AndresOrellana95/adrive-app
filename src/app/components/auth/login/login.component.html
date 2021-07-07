@@ -1,0 +1,31 @@
+<div class="container">
+    <div class="row pt-6 mt-6">
+        <div class="col">
+            <div class="card text-center">
+                <div class="card-header">
+                    Inicio de sesión
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Ingrese sus credenciales</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <form [formGroup]="loginForm" (ngSubmit)="onLogin(loginForm)">
+                                <div class="form-group">
+                                  <label for="code">Código de empleado</label>
+                                  <input formControlName="code" type="input" class="form-control" id="code">
+                                </div>
+                                <div class="form-group">
+                                  <label for="password">Contraseña</label>
+                                  <input formControlName="password" type="password" class="form-control" id="password">
+                                </div>
+                                <button type="submit" [disabled]="!loginForm.valid" class="btn btn-primary">Iniciar sesión</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

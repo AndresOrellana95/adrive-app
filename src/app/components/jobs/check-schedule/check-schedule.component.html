@@ -1,0 +1,89 @@
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <input type="button" class="btn btn-outline-warning btn-sm float-right"  (click)="cerrarSesion()" value="Cerrar sesión">
+        </div>
+    </div>
+</div>
+<ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
+    <li [ngbNavItem]="1">
+      <a ngbNavLink>Ruta</a>
+      <ng-template ngbNavContent>
+        <div class="container">
+            <div class="row pt-5">
+                <div class="col-lg-9 col-sm-12">
+                    <agm-map  [latitude]="latitude" [longitude]="longitude">
+                        <agm-marker *ngFor="let dot of dotList" [latitude]="dot.latitude" [longitude]="dot.longitude"
+                        [visible]="dot.visible" (markerClick)="checkLocation($event)">
+                        </agm-marker>
+                        <agm-direction (onResponse)="requestResponse($event)" [origin]="origin" 
+                        [destination]="destination" [optimizeWaypoints]="true" 
+                        [visible]="calculateDistance"></agm-direction>
+                    </agm-map>
+                </div>
+                <div *ngIf="selectedDot.visible" class="col-lg-3 col-sm-10">
+                    <div class="row">
+                        <h6>Cliente</h6>
+                    </div>
+                    <div class="row">
+                        Nombre: {{ selectedDot.client }}
+                    </div>
+                    <div class="row">
+                        Teléfono 1: {{ selectedDot.phone }}
+                    </div>
+                    <div class="row">
+                        Teléfono 2: {{ selectedDot.phone2 }}
+                    </div>
+                    <div class="row">
+                        <h6>Direcciones</h6>
+                    </div>
+                    <div class="row">
+                        Local: {{ selectedDot.name }}
+                    </div>
+                    <div class="row">
+                        Dirección 1: {{ selectedDot.dir1 }}
+                    </div>
+                    <div class="row">
+                        Dirección 2: {{ selectedDot.dir2 }}
+                    </div>
+                    <div class="row">
+                        Dirección 3: {{ selectedDot.dir3 }}
+                    </div>
+                    <div class="row">
+                        Referencia: {{ selectedDot.reference }}
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-end">
+                <div class="col-12">
+                    <button type="button" (click)="registerTimestamp()" class="btn btn-secondary btn-lg float-left">Registrar</button>
+                    <button type="button" (click)="calculateDist()" class="btn btn-primary btn-lg float-right">Calcular</button>
+                </div>
+            </div>
+        </div>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="2">
+      <a ngbNavLink>Registro de tareas</a>
+      <ng-template ngbNavContent>
+          <div class="container">
+            <ngb-accordion #a="ngbAccordion" *ngFor="let job of jobList" id="{{job.id}}" title="{{job.storeInfo.code}}" activeIds="">
+                <ngb-panel>
+                  <ng-template ngbPanelHeader>
+                    <div class="d-flex align-items-center justify-content-between">
+                      <h5 class="m-0">{{ job.storeInfo.name }}</h5>
+                      <div>
+                        <button type="button" class="btn btn-sm btn-outline-danger ml-2" (click)="goToRegisterJob(job.id, job.storeInfo.code)">Registrar trabajo</button>
+                      </div>
+                    </div>
+                  </ng-template>
+                  <ng-template ngbPanelContent>
+                  </ng-template>
+                </ngb-panel>
+            </ngb-accordion>
+          </div>
+      </ng-template>
+    </li>
+</ul>
+  
+<div [ngbNavOutlet]="nav" class="mt-2"></div>

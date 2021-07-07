@@ -1,0 +1,215 @@
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h6>DETALLE DE TAREA</h6>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <h6>Cliente</h6>
+            </div>
+            <div class="row">
+                Nombre: {{ selectedDot.client }}
+            </div>
+            <div class="row">
+                Teléfono 1: {{ selectedDot.phone }}
+            </div>
+            <div class="row">
+                Teléfono 2: {{ selectedDot.phone2 }}
+            </div>
+            <div class="row">
+                Contacto ILC: {{ selectedDot.contactILC }}
+            </div>
+            <div class="row">
+                Teléfono ILC: {{ selectedDot.phoneILC }}
+            </div>
+            <div class="row">
+                <h6>Direcciones</h6>
+            </div>
+            <div class="row">
+                Código: {{ selectedDot.code }}
+            </div>
+            <div class="row">
+                Local: {{ selectedDot.name }}
+            </div>
+            <div class="row">
+                Dirección 1: {{ selectedDot.dir1 }}
+            </div>
+            <div class="row">
+                Dirección 2: {{ selectedDot.dir2 }}
+            </div>
+            <div class="row">
+                Dirección 3: {{ selectedDot.dir3 }}
+            </div>
+            <div class="row">
+                Referencia: {{ selectedDot.reference }}
+            </div>
+        </div>
+    </div>
+    <div class="row pt-2">
+        <div class="col-12">
+            <div class="row">
+                <div class="col">
+                    <h6>Carga Imagenes</h6>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-5"><strong>Antes:</strong></div>
+                            <div class="col-5">
+                              <button class="btn btn-info muestra" (click)="checkImage(i, 1)" *ngFor="let imagen of beforeImage; index as i">IMG{{i + 1}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-5"><strong>Después:</strong></div>
+                            <div class="col-5">
+                              <button class="btn btn-info muestra" (click)="checkImage(i, 2)" *ngFor="let imagen of afterImage; index as i">IMG{{i + 1}}</button>
+                            </div>
+                        </div>                  
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-5"><strong>Conforme:</strong></div>
+                            <div class="col-5">
+                              <button class="btn btn-info muestra" (click)="checkImage(i, 3)" *ngFor="let imagen of accetptedImage; index as i">IMG{{i + 1}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>              
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h6>Seleccione una imagen para visualizar</h6>
+        </div>
+        <div class="col">
+            <img [src]="selectedImg" *ngIf="selectedImg"><br>
+        </div>
+    </div>
+    <div class="row pt-2">
+        <div class="col-12">
+            <h6>Tarea</h6>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" [(ngModel)]="job.name" type="checkbox" id="paintedName" >
+              <label class="form-check-label" for="picture1">Nombre pintado</label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h6>Rotulos</h6>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" [(ngModel)]="job.picture1" type="checkbox" id="picture1" >
+            <label class="form-check-label" for="picture1">Banner</label>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" [(ngModel)]="job.picture2" type="checkbox" id="picture2" >
+            <label class="form-check-label" for="picture2">Porta afiche</label>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" [(ngModel)]="job.picture3" type="checkbox" id="picture3" >
+            <label class="form-check-label" for="picture3">Afiche</label>
+          </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" [(ngModel)]="job.picture4" type="checkbox" id="picture4" >
+            <label class="form-check-label" for="picture4">Marco Lego</label>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" [(ngModel)]="job.picture5" type="checkbox" id="picture5" >
+            <label class="form-check-label" for="picture5">Glorificador</label>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" [(ngModel)]="job.picture6" type="checkbox" id="picture6" >
+            <label class="form-check-label" for="picture6">Banderola</label>
+          </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h6>Áreas</h6>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Área total:
+        </div>
+    </div>
+    <div *ngFor="let p of structureP; index as i" class="row">
+        <div class="col">
+            <label for="baseP{{i}}">Base</label>
+            <input type="number" id="baseP{{i}}" value="{{p.base}}"
+            class="form-control" placeholder="" readonly>
+        </div>
+        <div class="col">
+            <label for="alturaP{{i}}">Altura</label>
+            <input type="number" id="alturaP{{i}}" value="{{p.altura}}" 
+            class="form-control" placeholder="" readonly>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Área no pintada
+        </div>
+    </div>
+    <div *ngFor="let np of areaWP; index as i" class="row">
+        <div class="col">
+            <label for="baseNP{{i}}">Base</label>
+            <input type="number" id="baseNP{{i}}" value="{{np.baseNP}}"
+            class="form-control" placeholder="" readonly>
+        </div>
+        <div class="col">
+            <label for="alturaNP{{i}}">Altura</label>
+            <input type="number" id="alturaNP{{i}}" value="{{np.alturaNP}}" 
+            class="form-control" placeholder="" readonly>
+        </div>
+    </div>
+    <div *ngIf="job.surplus > 0" class="row">
+        <span style="color: red;">{{ job.surplus }}</span>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <label for="comments">Comentarios</label>
+                <textarea class="form-control" [(ngModel)]="job.comments" id="comments" rows="3"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <button type="button" (click)="assign()" class="btn btn-warning float-left">Reasignar</button>
+            <button type="button" (click)="approve()" class="btn btn-success float-right">Aprobar</button>
+        </div>
+    </div>
+</div>
